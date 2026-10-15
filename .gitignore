@@ -1,59 +1,63 @@
-# .gitignore
-# Ignore virtual environment
-venv/   
-# Ignore Python bytecode files
-__pycache__/        
-*.pyc
-# Ignore Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-# Ignore data files
-data/   
-# Ignore model files
-models/
-# Ignore logs
-logs/   
-# Ignore IDE files
-.vscode/    
-.idea/ 
-# Ignore system files
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Editor and OS files
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
-# Ignore coverage reports
+
+# Jupyter / notebooks
+.ipynb_checkpoints/
+
+# Test and coverage output
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
 coverage/
-# Ignore test results
-test_results/
-# Ignore build files
+htmlcov/
+
+# Build artifacts
 build/
 dist/
-# Ignore package files
 *.egg-info/
-# Ignore Docker files
-docker-compose.override.yml
-# Ignore other configuration files
-config.yaml
-config.json
-# Ignore secrets
-secrets/
-# Ignore any other files that should not be committed
-*.env
-*.key
+
+# Local configuration and secrets
+.env
+.env.*
 *.pem
+*.key
 *.crt
 *.pfx
-*.jks
 *.p12
-*.bak
-*.swp
-*.log
-*.tmp
-*.backup
-*.old
-*.orig
-*.rej
-*.swo
-*.swn
-*.DS_Store
-Thumbs.db
+*.jks
+config.yaml
+config.json
+secrets/
+
+# Generated data exports
 products.csv
 products.json
+output/
+logs/
+
+# Temporary and backup files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+*.rej
+*.old
 

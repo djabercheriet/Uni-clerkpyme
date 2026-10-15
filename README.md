@@ -1,246 +1,103 @@
-# 🚀 Universal E-Commerce Scraper (POS-Ready)
+# Uni-Clerkpyme Scraper
 
-A powerful, production-ready web scraping engine designed to extract product data from **any e-commerce website** and export it into a clean, structured CSV ready for **POS system import**.
+A lightweight Python scraper for extracting product data from e-commerce category pages and exporting it to a CSV file for catalog, inventory, or POS workflows.
 
----
+This project is built around a single script, [uniclerkpyme.py](uniclerkpyme.py), and uses Playwright to load pages, discover product links, extract pricing metadata, and export the final result as `products.csv`.
 
-## ✨ Features
+## Features
 
-* 🔍 **Universal scraping engine V1**
+- Category-page crawling with configurable start page and page count
+- Product link discovery from page HTML
+- Multiple fallback strategies for price extraction
+- Automatic generation of SKU, barcode, stock, and cost values
+- UTF-8 CSV export with a POS-friendly column order
+- Simple setup and minimal dependencies
 
-  * Works on most WooCommerce, Shopify, and standard e-commerce sites
-* ⚡ **Hybrid extraction system**
+## Project structure
 
-  * API interception (when available)
-  * DOM parsing fallback
-  * Intelligent text scanning
-* 💰 **Accurate price detection**
+- [uniclerkpyme.py](uniclerkpyme.py): main scraping workflow
+- [requirements.txt](requirements.txt): project dependencies
+- [README.md](README.md): usage and setup notes
+- [AGENTS.md](AGENTS.md): repo instructions for coding agents
 
-  * Handles formats like `1,270.00 د.ج`, `1270 DA`, etc.
-* 🖼 **Smart image extraction**
+## Requirements
 
-  * Ignores logos/icons
-  * Selects best-quality product image
-* 🚀 **Parallel scraping**
+- Python 3.10+
+- Playwright browser runtime
+- pandas
 
-  * Faster product extraction using async workers
-* 🧠 **Auto-generated fields**
-
-  * SKU
-  * Barcode
-  * Cost (based on price)
-  * Stock
-* 🧹 **Data cleaning**
-
-  * Removes duplicates
-  * Normalizes output
-* 📦 **POS-ready CSV export**
-
-  * Correct column order
-  * UTF-8 encoding (no broken characters)
-
----
-
-## 📁 Output Format
-
-The scraper exports a `products.csv` file with the following structure:
-
-| Column   | Description            |
-| -------- | ---------------------- |
-| Image    | Product image URL      |
-| Name     | Product name           |
-| SKU      | Auto-generated SKU     |
-| Category | Extracted from URL     |
-| Price    | Clean numeric price    |
-| Cost     | Auto-calculated cost   |
-| Stock    | Random stock value     |
-| Barcode  | Auto-generated barcode |
-
----
-
-## 🛠 Requirements
-
-* Python **3.10+** (recommended: 3.11–3.13)
-* Playwright
-* Pandas
-
----
-
-## ⚙️ Installation
+## Installation
 
 ```bash
-# Clone repository
-git clone https://github.com/djabercheriet/universal-scraper.git
-cd universal-scraper
-
-# Create virtual environment
 python -m venv venv
-venv\Scripts\activate   # Windows
-
-# Install dependencies
+venv\Scripts\activate
 pip install -r requirements.txt
-
-# Install Playwright browsers
 playwright install
 ```
 
----
+## Usage
 
-## 📦 requirements.txt
-
-```txt
-playwright
-pandas
-```
-
----
-
-## 🚀 Usage
+Run the scraper from the repository root:
 
 ```bash
-python go-get.py
+python .\uniclerkpyme.py
 ```
 
-### You will be prompted for:
+The script will prompt for:
 
-* 🔗 Category URL:
-* 🔢 Start page (Default 1) (0 = all):
-* 🔢 Number of pages:
-* 🔢 Maximum number of products (0 = no limit):
+- Category URL
+- Start page
+- Number of pages to crawl
+- Maximum number of products to export
 
----
+## Output
 
-## 🧠 How It Works
+The scraper writes a CSV file named `products.csv` with this column order:
 
-### 1. Page Loading
+| Column | Description |
+| --- | --- |
+| Image | Product image URL |
+| Name | Product title |
+| SKU | Generated SKU |
+| Category | Category slug derived from the URL |
+| Price | Parsed product price |
+| Cost | Estimated cost based on price |
+| Stock | Randomized stock count |
+| Barcode | Generated barcode |
 
-Uses Playwright with:
+## How it works
 
-* `domcontentloaded` strategy
-* retry logic to prevent timeouts
+1. Opens the category URL in Playwright.
+2. Finds product links on the page.
+3. Visits each product page and reads the available metadata.
+4. Extracts price with fallback logic for dynamic or JavaScript-heavy storefronts.
+5. Saves the cleaned output as a CSV file.
 
-### 2. Product Detection
+## Important notes
 
-* Automatically detects product links
-* No manual selectors required
+- The scraper assumes product URLs contain `/product/` segments.
+- Price extraction is heuristic and may require adjustment for heavily protected or dynamic storefronts.
+- Generated output files are local artifacts and should not be committed unless intentionally required.
+- Respect the target website's terms of service and keep scraping volume conservative.
 
-### 3. Data Extraction
+## Troubleshooting
 
-Multi-layer strategy:
-
-1. JavaScript / JSON data
-2. DOM parsing
-3. Full-page text scanning
-
-### 4. Price Detection (Key Feature)
-
-* Extracts all numeric candidates
-* Filters realistic price ranges
-* Selects the most probable value
-
-### 5. Image Selection
-
-* Ignores small/irrelevant images
-* Picks highest-quality product image
-
-### 6. Export
-
-* Clean CSV
-* UTF-8 encoding
-* POS-ready structure
-
----
-
-## ⚠️ Known Limitations
-
-* Some sites with:
-
-  * heavy anti-bot protection
-  * private APIs
-  * login requirements
-    may require additional handling
-
----
-
-## 🔧 Troubleshooting
-
-### ❌ Timeout Error
-
-```
-TimeoutError: Page.goto: Timeout exceeded
-```
-
-✅ Fix:
-
-* Ensure this is used:
-
-```python
-await page.goto(url, wait_until="domcontentloaded", timeout=60000)
-```
-
----
-
-### ❌ Price = 0
-
-* Site uses dynamic rendering
-* Solution:
-
-  * Script already uses fallback extraction
-  * Increase wait time if needed
-
----
-
-### ❌ Playwright Not Found
+### Playwright browser missing
 
 ```bash
-pip install playwright
 playwright install
 ```
 
----
+### Timeout or price extraction issues
 
-## 🔒 Best Practices
+- Increase wait times in the scraper if the page loads slowly.
+- Check whether the site injects prices in scripts or JSON instead of the standard DOM.
+- Confirm the target page structure still includes product URLs matching `/product/`.
 
-* Use a VPN or proxy for large scraping jobs
-* Avoid very high request rates
-* Respect website terms of service
+## Contributing
 
----
+Pull requests are welcome. For larger changes, open an issue first to discuss the proposed update.
 
-## 🚀 Roadmap
+## License
 
-* [ ] Desktop GUI application
-* [ ] Automatic pagination detection
-* [ ] Multi-category scraping
-* [ ] Image download + optimization
-* [ ] Proxy rotation
-* [ ] AI-based element detection
-
----
-
-## 📄 License
-
-MIT License — free to use and modify.
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome.
-For major changes, open an issue first to discuss what you would like to change.
-
----
-
-## 💡 Author
-
-Built for high-performance POS data extraction and automation.
-
----
-
-## ⭐ Support
-
-If this project helped you:
-
-👉 Star the repo
-👉 Share it
-👉 Build something powerful with it 🚀
+This project is provided as-is for internal or personal use. If you plan to distribute it publicly, add an explicit license file before publishing.
